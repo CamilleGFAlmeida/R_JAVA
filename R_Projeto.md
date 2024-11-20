@@ -131,5 +131,3 @@ Cada operação sensível (`sacar`, `transferir`) é envolvida em blocos `try-ca
 3. Após depósitos e transferências, os saldos são atualizados corretamente.
 
 ---
-
-Esse sistema exemplifica como estruturar um projeto modular, reutilizável e robusto usando conceitos de **POO**, **interfaces**, e **exceções personalizadas** em Java.
