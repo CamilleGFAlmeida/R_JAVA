@@ -707,3 +707,263 @@ Throwable
 4. Exceções personalizadas podem ser criadas para atender requisitos específicos.
 
 Essa estrutura facilita a manipulação de erros, promovendo robustez no código e garantindo que falhas sejam tratadas ou evitadas adequadamente.
+
+
+##
+## Qual a diferença entre Throws e Throw?
+
+### **1. `throws`**
+- **Descrição**: 
+  O **`throws`** é usado na **declaração do método** para informar que ele pode lançar uma ou mais exceções verificadas. É uma promessa ao compilador de que o método chamador deve lidar com essas exceções.
+  
+- **Onde é usado**: 
+  Na assinatura de um método, seguido pela lista de exceções que ele pode lançar.
+
+- **Finalidade**:
+  - Serve para **documentar** as possíveis exceções que o método pode lançar.
+  - Obriga o método chamador a tratar ou propagar essas exceções.
+
+- **Exemplo**:
+```java
+public void abrirArquivo(String caminho) throws IOException {
+    FileReader file = new FileReader(caminho);
+    file.read();
+}
+```
+- No exemplo acima:
+  - O método `abrirArquivo` declara que pode lançar uma `IOException`.
+  - Quem chamar esse método será obrigado a tratá-la ou declará-la novamente.
+
+```java
+try {
+    abrirArquivo("arquivo.txt");
+} catch (IOException e) {
+    System.out.println("Erro ao abrir o arquivo: " + e.getMessage());
+}
+```
+
+---
+
+### **2. `throw`**
+- **Descrição**:
+  O **`throw`** é usado dentro de um método ou bloco de código para **lançar** uma exceção específica no momento da execução.
+
+- **Onde é usado**:
+  Dentro do corpo do método ou em blocos `try`.
+
+- **Finalidade**:
+  - Serve para **lançar uma instância de uma exceção**.
+  - Interrompe o fluxo normal do programa e passa a exceção para o mecanismo de tratamento.
+
+- **Exemplo**:
+```java
+public void sacar(double valor) {
+    if (valor > saldo) {
+        throw new IllegalArgumentException("Saldo insuficiente para o saque.");
+    }
+    saldo -= valor;
+}
+```
+- No exemplo acima:
+  - A exceção `IllegalArgumentException` é **lançada** com a palavra-chave `throw` se o valor do saque for maior que o saldo.
+
+---
+
+### **Diferença Principal**
+| **Aspecto**          | **`throws`**                                  | **`throw`**                            |
+|-----------------------|-----------------------------------------------|----------------------------------------|
+| **Finalidade**        | Declara que um método pode lançar exceções.  | Lança efetivamente uma exceção.        |
+| **Local de uso**      | Na assinatura de métodos.                    | Dentro do corpo de um método ou bloco. |
+| **Requer instância?** | Não. É apenas uma declaração.                | Sim. Lança uma instância de exceção.   |
+
+---
+
+### **Uso Combinado**
+Geralmente, `throw` e `throws` são usados juntos. Por exemplo:
+```java
+public void verificarIdade(int idade) throws IllegalArgumentException {
+    if (idade < 18) {
+        throw new IllegalArgumentException("Idade insuficiente para cadastro.");
+    }
+}
+```
+- **`throws`** declara que o método pode lançar `IllegalArgumentException`.
+- **`throw`** lança efetivamente a instância da exceção se a idade for inválida.
+
+---
+
+### **Resumo**
+- Use **`throws`** para informar que um método pode lançar exceções.
+- Use **`throw`** para realmente lançar uma exceção durante a execução do programa.
+
+
+##
+## Aonde fica o "SUPER" do message dessa exceção? 
+
+```
+package Banco;
+public class LimiteSaqueException extends Exception {
+    public LimiteSaqueException(String message) {
+        super(message);
+    }
+}
+```
+
+O **`super(message)`** da classe `LimiteSaqueException` está chamando o construtor da classe **superclasse**, que no caso é a classe **`Exception`**. Isso ocorre porque a classe `LimiteSaqueException` estende a classe `Exception`, e toda classe filha tem acesso ao construtor da classe mãe usando a palavra-chave **`super`**.
+
+### Onde o `super(message)` é processado?
+
+1. **No construtor da classe `Exception`**:
+   A classe `Exception` tem um construtor que aceita uma string como parâmetro:
+   ```java
+   public Exception(String message) {
+       super(message);
+   }
+   ```
+   Aqui, o **`super(message)`** invoca o construtor de sua própria classe mãe, que é **`Throwable`**.
+
+2. **No construtor da classe `Throwable`**:
+   A classe `Throwable` (que é a ancestral de todas as exceções em Java) tem um construtor semelhante:
+   ```java
+   public Throwable(String message) {
+       this.detailMessage = message;
+   }
+   ```
+   Nesse ponto, o valor de **`message`** é armazenado no campo interno **`detailMessage`** da classe `Throwable`. Esse campo é usado por métodos como **`getMessage()`**, que retorna a mensagem de erro associada à exceção.
+
+---
+
+### Fluxo completo:
+1. Quando o construtor de `LimiteSaqueException` é chamado com uma string, ele passa essa string para o **construtor da superclasse** com `super(message)`.
+2. O construtor de `Exception` (superclasse direta) é executado.
+3. O construtor de `Exception` repassa a string para o construtor de `Throwable` (ancestral de todas as exceções).
+4. O construtor de `Throwable` armazena a string no campo `detailMessage`.
+
+---
+
+### Exemplo em ação:
+```java
+public class LimiteSaqueException extends Exception {
+    public LimiteSaqueException(String message) {
+        super(message); // Passa a mensagem para Exception -> Throwable
+    }
+}
+```
+
+Teste:
+```java
+public class Teste {
+    public static void main(String[] args) {
+        try {
+            throw new LimiteSaqueException("Você não pode sacar mais que R$300.");
+        } catch (LimiteSaqueException e) {
+            System.out.println(e.getMessage()); // Saída: Você não pode sacar mais que R$300.
+        }
+    }
+}
+```
+
+---
+
+### Resumo
+O **`super(message)`**:
+- Faz a chamada ao construtor da classe mãe (no caso, `Exception`).
+- O valor da mensagem percorre a hierarquia até a classe `Throwable`, onde é armazenado no campo `detailMessage`.
+- Esse campo é usado para exibir ou recuperar a mensagem da exceção via métodos como `getMessage()` ou `printStackTrace()`.
+
+
+##
+## Para que serve o "FINALLY" e ele poderia ser usado nesse código do projeto sistema bancário? faria alguma diferença?
+
+O **`finally`** é um bloco opcional usado em conjunto com `try-catch` no Java. Sua finalidade principal é garantir que determinado trecho de código seja executado **sempre**, independentemente de uma exceção ter sido lançada ou não. Ele é amplamente utilizado para liberar recursos, fechar conexões ou executar ações que devem ocorrer em qualquer circunstância.
+
+---
+
+### **Características do `finally`**
+1. **Execução Garantida**:
+   - O bloco `finally` sempre será executado, mesmo que:
+     - Nenhuma exceção seja lançada.
+     - Uma exceção seja lançada e capturada.
+     - Uma exceção seja lançada e não capturada.
+     - Um `return` seja usado no bloco `try` ou `catch`.
+
+2. **Finalidade Comum**:
+   - Fechar arquivos ou fluxos de dados.
+   - Liberar conexões com banco de dados.
+   - Garantir a limpeza de recursos.
+
+---
+
+### **Estrutura Geral**
+```java
+try {
+    // Código que pode lançar uma exceção
+} catch (Exception e) {
+    // Tratamento de exceção
+} finally {
+    // Código que será executado sempre
+}
+```
+
+---
+
+### **Uso no Projeto "Sistema Bancário"**
+O bloco `finally` poderia ser incluído para **garantir que certos recursos sejam sempre liberados ou certas ações sejam executadas**, como:
+- Registrar logs de operações, mesmo em caso de erro.
+- Garantir que mensagens de transações ou erros sejam finalizadas.
+- Executar ações específicas após uma tentativa de operação (como notificar usuários ou limpar buffers).
+
+#### **Exemplo de Aplicação no Projeto**
+No método de saque ou transferência, o bloco `finally` poderia ser usado para garantir o registro da tentativa, mesmo que ela falhe.
+
+```java
+try {
+    cc.sacar(3000.0); // Tenta sacar um valor
+    System.out.println("Saque realizado com sucesso!");
+} catch (SaldoInsuficienteException e) {
+    System.out.println("Erro no saque: " + e.getMessage());
+} catch (LimiteSaqueException e) {
+    System.out.println("Erro no saque: " + e.getMessage());
+} catch (MultiploDeVinteException e) {
+    System.out.println("Erro no saque: " + e.getMessage());
+} finally {
+    // Sempre executado, mesmo que o saque falhe
+    System.out.println("Operação de saque finalizada.");
+}
+```
+
+**Saída possível:**
+1. Se o saque for bem-sucedido:
+   ```
+   Saque realizado com sucesso!
+   Operação de saque finalizada.
+   ```
+
+2. Se o saque falhar:
+   ```
+   Erro no saque: Saldo insuficiente.
+   Operação de saque finalizada.
+   ```
+
+---
+
+### **Vantagens do Uso no Projeto**
+1. **Manutenção e Controle**:
+   - Centraliza ações que devem ser garantidas em todas as operações, como logs e mensagens.
+   
+2. **Resiliência do Sistema**:
+   - Recursos (como conexões de banco de dados ou arquivos) são sempre liberados, evitando problemas de recursos não utilizados.
+
+---
+
+### **Faria Diferença no Sistema Bancário?**
+Depende da lógica que se deseja implementar:
+- **Sim, se houver recursos que precisem ser liberados ou ações adicionais que devem ocorrer sempre.**
+  - Por exemplo, registrar transações em um log ou banco de dados, mesmo que elas falhem.
+  - Garantir que mensagens ou notificações sejam enviadas após operações de saque, depósito ou transferência.
+- **Não, se todas as ações necessárias já estiverem contempladas nos blocos `try` ou `catch`.**
+
+---
+
+### **Conclusão**
+O bloco `finally` é útil para **ações que devem ocorrer incondicionalmente**. No projeto "Sistema Bancário", ele pode ser usado para melhorar a robustez e a manutenção do sistema, como no registro de logs ou na liberação de recursos. Embora não seja estritamente necessário no código atual, sua inclusão pode aumentar a clareza e a confiabilidade em cenários mais complexos.
