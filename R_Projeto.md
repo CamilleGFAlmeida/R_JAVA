@@ -127,4 +127,8 @@ Cada operação sensível (`sacar`, `transferir`) é envolvida em blocos `try-ca
    - Lança `MultiploDeVinteException` (valor não é múltiplo de 20).
 3. Após depósitos e transferências, os saldos são atualizados corretamente.
 
+<<<<<<< HEAD
 ---
+=======
+---
+>>>>>>> 519deab052c73a32bed36cbdc56d219bdc1b6112
