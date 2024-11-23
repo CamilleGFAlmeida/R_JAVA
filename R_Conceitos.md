@@ -836,3 +836,86 @@ Depende da lógica que se deseja implementar:
 
 ### **Conclusão**
 O bloco `finally` é útil para **ações que devem ocorrer incondicionalmente**. No projeto "Sistema Bancário", ele pode ser usado para melhorar a robustez e a manutenção do sistema, como no registro de logs ou na liberação de recursos. Embora não seja estritamente necessário no código atual, sua inclusão pode aumentar a clareza e a confiabilidade em cenários mais complexos.
+
+### **Resumo sobre Exceções no Java**
+
+No Java, **exceções** são eventos que interrompem o fluxo normal de execução de um programa. Todas as exceções são representadas por **classes** que fazem parte da hierarquia da classe base **`Throwable`**.
+
+---
+
+### **1. Classe `Throwable` (Superclasse de Exceções)**
+- **Descrição**: É a superclasse de todas as exceções e erros no Java. Apenas objetos de classes que herdam de `Throwable` podem ser lançados e capturados.
+- **Subclasses principais**:
+  - **`Exception`**: Representa condições excepcionais que o programa pode capturar e tratar.
+  - **`Error`**: Representa erros graves que normalmente não podem ser tratados (ex.: problemas de memória).
+- **Métodos úteis**:
+  - `getMessage()`: Retorna a mensagem da exceção.
+  - `printStackTrace()`: Exibe a pilha de chamadas que levou à exceção.
+  - `getCause()`: Retorna a causa da exceção.
+
+---
+
+### **2. Classe `Exception`**
+- **Descrição**: É a classe base para exceções que um programa deve tratar.
+- **Exceções verificadas (checked)**: 
+  - São verificadas pelo compilador e exigem que o desenvolvedor lide com elas usando `try-catch` ou declarando `throws`.
+  - Exemplos: `IOException`, `SQLException`, `ClassNotFoundException`.
+- **Exceções não verificadas (unchecked)**:
+  - Herdam de `RuntimeException`, uma subclasse de `Exception`, e não precisam ser declaradas ou tratadas obrigatoriamente.
+
+---
+
+### **3. Classe `RuntimeException`**
+- **Descrição**: É uma subclasse de `Exception` usada para exceções **não verificadas**.
+- **Características**:
+  - Não exige tratamento obrigatório pelo compilador.
+  - Geralmente representam erros de lógica ou programação, como acessar índices inválidos ou trabalhar com objetos nulos.
+- **Exemplos**:
+  - `NullPointerException`: Tentativa de acessar um método ou campo de um objeto que é `null`.
+  - `ArithmeticException`: Erro em uma operação matemática, como divisão por zero.
+  - `ArrayIndexOutOfBoundsException`: Acesso a um índice inválido em um array.
+
+---
+
+### **4. Classe `NullPointerException`**
+- **Descrição**: Uma subclasse de `RuntimeException`, ocorre quando o programa tenta:
+  - Chamar um método ou acessar um campo de um objeto que não foi inicializado (é `null`).
+- **Exemplo de ocorrência**:
+  ```java
+  String nome = null;
+  System.out.println(nome.length()); // Lança NullPointerException
+  ```
+- **Como evitar**:
+  - Usar verificações de nulidade (`if (obj != null)`).
+  - Adotar **Optional** ou APIs modernas como `Objects.requireNonNull()`.
+
+---
+
+### **5. Classe `ArithmeticException`**
+- **Descrição**: Subclasse de `RuntimeException`, ocorre quando há um erro em uma operação matemática.
+- **Exemplo comum**: Divisão por zero.
+  ```java
+  int resultado = 10 / 0; // Lança ArithmeticException
+  ```
+- **Como evitar**:
+  - Fazer verificações antes de realizar operações matemáticas.
+  - Garantir que o divisor não seja zero antes de dividir.
+
+---
+
+### **Comparação das Classes**
+| Classe                | Verificação | Exemplos                          | Tratamento Necessário? |
+|-----------------------|-------------|-----------------------------------|-------------------------|
+| **Throwable**         | N/A         | Base de todas as exceções e erros | N/A                     |
+| **Exception**         | Verificada  | `IOException`, `SQLException`    | Sim                     |
+| **RuntimeException**  | Não Verificada | `NullPointerException`, `ArithmeticException` | Não                     |
+| **NullPointerException** | Não Verificada | Acesso a objeto nulo             | Não                     |
+| **ArithmeticException**  | Não Verificada | Divisão por zero                 | Não                     |
+
+---
+
+### **Conclusão**
+- **`Throwable`** é a base da hierarquia de exceções e erros.
+- **`Exception`** trata situações que o programa pode prever e resolver.
+- **`RuntimeException`** foca em erros de lógica ou programação.
+- **`NullPointerException`** e **`ArithmeticException`** são exemplos de exceções em tempo de execução que devem ser evitadas com boas práticas.
