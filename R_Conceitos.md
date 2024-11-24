@@ -919,3 +919,64 @@ No Java, **exceções** são eventos que interrompem o fluxo normal de execuçã
 - **`Exception`** trata situações que o programa pode prever e resolver.
 - **`RuntimeException`** foca em erros de lógica ou programação.
 - **`NullPointerException`** e **`ArithmeticException`** são exemplos de exceções em tempo de execução que devem ser evitadas com boas práticas.
+
+## Benefícios das Exceções
+
+### **1. Separação entre lógica de negócios e tratamento de erros**
+   - **Benefício:** As exceções permitem que a lógica principal de um método fique limpa, enquanto o tratamento de erros é gerenciado separadamente.
+   - **Exemplo no projeto:** 
+     - No método `sacar`, a lógica principal (`saldo -= valor`) está separada do tratamento de situações problemáticas como saldo insuficiente ou valores inválidos, que são gerenciados pelas exceções.
+
+##
+
+### **2. Melhor legibilidade e organização do código**
+   - **Benefício:** O uso de exceções ajuda a evitar verificações manuais (como muitos `if` e `else`) no fluxo principal do código, tornando-o mais legível.
+   - **Exemplo no projeto:** 
+     - Em vez de múltiplas verificações no `TesteBanco` para erros de saque (saldo, limite, múltiplo de 20), as exceções permitem que o programa lide com os erros de forma genérica, com mensagens claras.
+
+##
+
+### **3. Reutilização de lógica de erro**
+   - **Benefício:** Uma exceção personalizada pode ser usada em várias partes do sistema, centralizando a lógica de erro e facilitando a manutenção.
+   - **Exemplo no projeto:** 
+     - `SaldoInsuficienteException` é usada tanto no método `sacar` quanto no método `transferir`, evitando a repetição de validações em diferentes lugares.
+
+##
+
+### **4. Facilita a depuração e diagnóstico**
+   - **Benefício:** Exceções fornecem informações detalhadas sobre os erros, como mensagens explicativas, pilha de chamadas (stack trace) e até mesmo a causa raiz do problema, o que ajuda na identificação e correção de falhas.
+   - **Exemplo no projeto:** 
+     - Se um saque falhar, a mensagem lançada por `LimiteSaqueException` informa claramente que o problema foi um valor acima de R$300, facilitando a análise do problema.
+
+##
+
+### **5. Fluxo de controle mais robusto**
+   - **Benefício:** Exceções permitem que o programa trate erros sem interromper a execução completa do sistema, garantindo uma experiência mais estável para o usuário.
+   - **Exemplo no projeto:**
+     - O uso de `try-catch-finally` no `TesteBanco` garante que, mesmo que uma operação de saque falhe, o sistema continua funcionando e realiza outras operações.
+
+##
+
+### **6. Compatibilidade com APIs e bibliotecas**
+   - **Benefício:** Java fornece diversas exceções padrão (`IOException`, `NullPointerException`, etc.) que podem ser usadas para tratar erros comuns em operações com arquivos, redes, banco de dados, etc. Usar exceções no código torna-o mais alinhado com as práticas padrão da linguagem.
+   - **Exemplo no projeto:** 
+     - As exceções personalizadas seguem a convenção das exceções Java, tornando o sistema compatível com bibliotecas que também lançam ou capturam exceções.
+
+##
+
+### **7. Flexibilidade com exceções verificadas (checked exceptions)**
+   - **Benefício:** Em Java, as exceções verificadas obrigam o desenvolvedor a lidar com possíveis erros em tempo de compilação, reduzindo a chance de falhas em tempo de execução.
+   - **Exemplo no projeto:**
+     - As exceções como `SaldoInsuficienteException` são verificadas, obrigando métodos como `sacar` e `transferir` a declararem que podem lançá-las, ajudando no controle de erros.
+
+##
+
+### **8. Evita a propagação silenciosa de erros**
+   - **Benefício:** Exceções ajudam a garantir que erros não sejam ignorados, pois propagam o problema até que ele seja tratado.
+   - **Exemplo no projeto:**
+     - Sem exceções, um saque inválido poderia passar despercebido se o saldo fosse modificado incorretamente ou se nenhuma mensagem de erro fosse exibida.
+
+##
+
+### **Conclusão**
+As exceções melhoram a **robustez**, **manutenibilidade** e **clareza** de um sistema.
